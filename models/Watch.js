@@ -6,7 +6,7 @@ class Watch extends Base{
     _id = undefined
     title = ""
     location = ""
-    isAvailable = false
+    isAvailable = true
     resalePrice = ""
     originalPrice = ""
     picture = ""
@@ -19,14 +19,16 @@ class Watch extends Base{
 
     constructor(data) {
         super(Watch.collectionName)
-        this.name = data.name
-        this.price = Number(data.price)
-        this.model = data.model
-        this.image = data.image
-        this.brand = data.brand
-        this.userId = data.userId
+        this.title = data.title
+        this.location = data.location
+        this.isAvailable = data.isAvailable
+        this.resalePrice = Number(data.resalePrice)
+        this.originalPrice = Number(data.originalPrice)
+        this.picture = data.picture
+        this.conditionType = data.conditionType
+        this.mobileNumber = data.mobileNumber
         this.description = data.description
-        this.attributes = data.attributes
+        this.purchaseDate = data.purchaseDate
     }
 }
 

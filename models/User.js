@@ -14,6 +14,7 @@ class User extends Base{
     email = ""
     address= ""
     location = ""
+    idVerified = false
     createdAt = new Date()
     updatedAt = new Date()
 
@@ -24,6 +25,7 @@ class User extends Base{
         this.lastName = data.lastName
         this.username = data.username
         this.email = data.email
+        this.idVerified = false
         this.avatar = data.avatar
         this.googleId = data.googleId
         this.role = data.role
