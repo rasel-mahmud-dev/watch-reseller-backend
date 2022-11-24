@@ -5,6 +5,8 @@ require("dotenv").config()
 import express from "express"
 import cors from 'cors'
 
+import router from "./routes";
+
 const app = express()
 app.use(express.json())
 
@@ -30,7 +32,11 @@ app.get("/", (req, res)=>{
 })
 
 
-app.use((err, req, res)=>{
+// initialize all routes
+app.use(router)
+
+
+app.use((err, req, res, next)=>{
     res.status(500).json({message: err.message})
 })
 
