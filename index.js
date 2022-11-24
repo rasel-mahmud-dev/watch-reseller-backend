@@ -1,4 +1,3 @@
-import Base from "./models/Base";
 
 require("dotenv").config()
 
@@ -37,6 +36,7 @@ app.use(router)
 
 
 app.use((err, req, res, next)=>{
+    console.log(err)
     res.status(500).json({message: err.message})
 })
 

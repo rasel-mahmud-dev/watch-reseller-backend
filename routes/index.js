@@ -1,9 +1,11 @@
 import express from "express";
+const router = express.Router()
+
+
 import authRoute from "./authRoute";
 import watchRoute from "./watchRoute";
 import categoryRoute from "./categoryRoute";
 
-const router = express.Router()
 
 
 router.use("/api/v1/auth", authRoute)

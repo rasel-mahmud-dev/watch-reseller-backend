@@ -13,49 +13,72 @@ let cookieExpirationDate = new Date(Date.now() + 1000 * 3600 * 24 * 7); // 7 day
 router.post("/generate-token", async function (req, res, next) {
     const {
         googleId,
+        firstName,
+        lastName,
         username,
         avatar,
         role = "BUYER",
         phone,
         email,
         location,
+        isEntry = false
     } = req.body
 
     try {
-        let user = await (await User.collection).findOne({email: email})
+        let userCollection = await User.collection
+        let user = await userCollection.findOne({email: email})
+
         let token = ""
         if (!user) {
-            let namePart = username.split(" ")
+            // store new user
             let newUser = new User({
                 email,
                 googleId,
-                firstName: namePart[0] ? namePart[0] : "",
-                lastName: namePart[1] ? namePart[1] : "",
-                username: username,
+                firstName,
+                lastName,
+                username,
                 avatar,
                 role,
                 phone,
                 location,
             })
 
-            newUser = await newUser.save();
-            if (!newUser) {
+            user = await newUser.save();
+            if (!user) {
                 return response(res, "User creation fail, Please try again", 403)
             }
-
-            token = createToken(newUser._id, email)
+            if(!isEntry) {
+                token = createToken(newUser._id, email)
+            }
         } else {
-            token = createToken(user._id, email)
+            // update existing user
+            let updateUser = {}
+            if(firstName) updateUser.firstName = firstName
+            if(lastName) updateUser.lastName = lastName
+            if(googleId) updateUser.googleId = googleId
+            if(username) updateUser.username = username
+            if(avatar) updateUser.avatar = avatar
+            if(phone) updateUser.phone = phone
+            if(location) updateUser.location = location
+
+            let updatedResult = await userCollection.updateOne(
+                {email: email}, {$set: updateUser}
+            )
+            if(!isEntry) {
+                token = createToken(user._id, email)
+            }
         }
 
-        // send cookie in header to set client browser
-        res.cookie("token", token, {
-            domain: process.env.CLIENT,
-            path: "/",
-            secure: true,
-            expires: cookieExpirationDate,
-            httpOnly: true,
-        });
+        if(!isEntry) {
+            // send cookie in header to set client browser
+            res.cookie("token", token, {
+                domain: process.env.CLIENT,
+                path: "/",
+                secure: true,
+                expires: cookieExpirationDate,
+                httpOnly: true,
+            });
+        }
         return response(res, user, 201)
 
     } catch (ex) {
@@ -89,6 +112,22 @@ router.get("/validate-token", async function (req, res, next) {
 
     } catch (ex) {
         next(ex)
+    }
+})
+
+
+router.get("/logout",   async function (req, res, next) {
+    try {
+        res.cookie("token", "", {
+            domain: process.env.CLIENT,
+            path: "/",
+            secure: true,
+            expires: 0,
+            httpOnly: true,
+        });
+        response(res, "You are logout", 200);
+    } catch (ex) {
+        next(ex);
     }
 })
 
