@@ -20,4 +20,4 @@ class Category extends Base{
 }
 
 
-export default Watch;
+export default Category;
