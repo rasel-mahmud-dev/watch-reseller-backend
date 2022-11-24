@@ -3,7 +3,7 @@ import Base from "./Base.js";
 class Category extends Base{
 
     static collectionName = "categories";
-    _id =  ""
+    _id = undefined
     name = ""
     picture = ""
     createdAt = new Date()

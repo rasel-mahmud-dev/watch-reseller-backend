@@ -3,13 +3,12 @@ import Base from "./Base";
 class User extends Base{
 
     static collectionName = "users";
-    _id =  ""
+    _id = undefined
     googleId = ""
     firstName = ""
     lastName = ""
     username = ""
     avatar = ""
-    password = ""
     role = ""
     phone = ""
     email = ""
@@ -27,7 +26,6 @@ class User extends Base{
         this.email = data.email
         this.avatar = data.avatar
         this.googleId = data.googleId
-        this.password = data.password
         this.role = data.role
     }
 }

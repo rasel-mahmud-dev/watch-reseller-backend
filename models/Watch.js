@@ -3,7 +3,7 @@ import Base from "./Base.js";
 class Watch extends Base{
 
     static collectionName = "watches";
-    _id =  ""
+    _id = undefined
     title = ""
     location = ""
     isAvailable = false
