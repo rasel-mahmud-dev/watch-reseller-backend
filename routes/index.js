@@ -3,16 +3,18 @@ const router = express.Router()
 
 
 import authRoute from "./authRoute";
-import watchRoute from "./watchRoute";
+import productRoute from "./productRoute";
 import categoryRoute from "./categoryRoute";
 import advertiseRoute from "./advertiseRoute";
+import orderRoute from "./orderRoute";
 
 
 
 router.use("/api/v1/auth", authRoute)
-router.use("/api/v1/watch", watchRoute)
+router.use("/api/v1/product", productRoute)
 router.use("/api/v1/category", categoryRoute)
 router.use("/api/v1/advertise", advertiseRoute)
+router.use("/api/v1/order", orderRoute)
 
 
 export default router

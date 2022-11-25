@@ -9,7 +9,7 @@ import {ObjectId} from "mongodb";
 const router = express.Router()
 
 
-// [GET]  api/v1/watch find all watches for specific seller
+// [GET]  api/v1/product find all watches for specific seller
 router.get("/",  auth, role(["SELLER"]),  async function (req, res, next) {
     try {
         let watches = await (await Watch.collection).find({sellerId: new ObjectId(req.user.userId)}).toArray()
@@ -20,7 +20,7 @@ router.get("/",  auth, role(["SELLER"]),  async function (req, res, next) {
 })
 
 
-// [POST] api/v1/watch create new watch
+// [POST] api/v1/product create new watch
 router.post("/", auth, role(["SELLER"]),  async function (req, res, next) {
     const {
         title,
@@ -63,7 +63,7 @@ router.post("/", auth, role(["SELLER"]),  async function (req, res, next) {
 
 
 
-// [DELETE]  api/v1/watch/:id find all watches
+// [DELETE]  api/v1/product/:id find all watches
 router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
     try {
         let deleteResult = await Watch.deleteOne({_id: new ObjectId(req.params.id), sellerId: new ObjectId(req.user.userId)})

@@ -6,17 +6,21 @@ class Order extends Base{
     _id = undefined
     productId = undefined
     sellerId = undefined
+    buyerId = undefined
     title = ""
     price = ""
     phone = ""
     meetingAddress = ""
+    isPay = false
     createdAt = new Date()
     updatedAt = new Date()
     constructor(data) {
         super(Order.collectionName)
         this.productId = data.productId
         this.sellerId = data.sellerId
+        this.buyerId = data.buyerId
         this.title = data.title
+        this.isPay = data.isPay
         this.price = data.price
         this.phone = data.phone
         this.meetingAddress = data.meetingAddress
