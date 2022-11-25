@@ -1,8 +1,8 @@
 import Base from "./Base.js";
 
-class Watch extends Base{
+class Product extends Base{
 
-    static collectionName = "watches";
+    static collectionName = "products";
     _id = undefined
     sellerId = undefined
     categoryId = undefined
@@ -20,7 +20,7 @@ class Watch extends Base{
     updatedAt = new Date()
 
     constructor(data) {
-        super(Watch.collectionName)
+        super(Product.collectionName)
         this.title = data.title
         this.location = data.location
         this.isSold = false
@@ -37,4 +37,4 @@ class Watch extends Base{
 }
 
 
-export default Watch;
+export default Product;

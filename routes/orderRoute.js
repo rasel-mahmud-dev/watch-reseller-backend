@@ -5,27 +5,49 @@ import role from "../middlewares/role";
 
 import express from "express";
 import Order from "../models/Order";
-import Watch from "../models/Watch";
+import Product from "../models/Product";
 
 const router = express.Router()
 
 
 // [GET]  api/v1/order get all customer order
 router.get("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, res, next) {
-    try {
+        try {
 
-        let orders = await (await Order.collection).aggregate([
-            { $match: { buyerId: new ObjectId(req.user.userId) }  }
-        ]).toArray()
+            let orders = await (await Order.collection).aggregate([
+                {
+                    $match: {buyerId: new ObjectId(req.user.userId)}
+                },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "productId",
+                        foreignField: "_id",
+                        as: "product"
+                    }
+                },
+                {$unwind: {path: "$product", preserveNullAndEmptyArrays: true}},
+                {
+                    $project: {
+                        sellerId: "$sellerId",
+                        productId: "$productId",
+                        title: "$product.title",
+                        picture: "$product.picture",
+                        price: "$price",
+                        meetingAddress: "$meetingAddress",
+                    }
+                }
 
-        response(res, orders, 201)
+            ]).toArray()
 
-    } catch (ex) {
-        next(ex)
+            response(res, orders, 200)
+
+        } catch
+            (ex) {
+            next(ex)
+        }
     }
-})
-
-
+)
 
 
 // [POST]  api/v1/order create order
@@ -44,14 +66,14 @@ router.post("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, 
 
         if (!productId) return response(res, "Please provide product id", 401)
 
-        let product = await (await Watch.collection).findOne(
+        let product = await (await Product.collection).findOne(
             {_id: new ObjectId(productId)}
         )
-        if(!product){
+        if (!product) {
             return response(res, "Product not found", 404)
         }
 
-        if(product.isSold){
+        if (product.isSold) {
             return response(res, "This Product Already has been sold by someone", 401)
         }
 

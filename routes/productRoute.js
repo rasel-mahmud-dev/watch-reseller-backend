@@ -1,6 +1,6 @@
 import express from "express"
 import response from "../response";
-import Watch from "../models/Watch";
+import Product from "../models/Product";
 import auth from "../middlewares/auth";
 import role from "../middlewares/role";
 import {ObjectId} from "mongodb";
@@ -12,7 +12,7 @@ const router = express.Router()
 // [GET]  api/v1/product find all watches for specific seller
 router.get("/",  auth, role(["SELLER"]),  async function (req, res, next) {
     try {
-        let watches = await (await Watch.collection).find({sellerId: new ObjectId(req.user.userId)}).toArray()
+        let watches = await (await Product.collection).find({sellerId: new ObjectId(req.user.userId)}).toArray()
         response(res, watches, 200)
     } catch (ex) {
         next(ex)
@@ -36,7 +36,7 @@ router.post("/", auth, role(["SELLER"]),  async function (req, res, next) {
     } = req.body
 
     try {
-        let newWatch = new Watch({
+        let newWatch = new Product({
             title,
             location,
             resalePrice,
@@ -66,7 +66,7 @@ router.post("/", auth, role(["SELLER"]),  async function (req, res, next) {
 // [DELETE]  api/v1/product/:id find all watches
 router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
     try {
-        let deleteResult = await Watch.deleteOne({_id: new ObjectId(req.params.id), sellerId: new ObjectId(req.user.userId)})
+        let deleteResult = await Product.deleteOne({_id: new ObjectId(req.params.id), sellerId: new ObjectId(req.user.userId)})
         console.log(deleteResult)
         response(res, "deleted", 201)
     } catch (ex) {

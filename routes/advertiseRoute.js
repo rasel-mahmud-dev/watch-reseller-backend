@@ -16,13 +16,14 @@ router.get("/", async function (req, res, next) {
         let items = await (await Advertise.collection).aggregate([
             {
                 $lookup: {
-                    from: "watches",
+                    from: "products",
                     localField: "productId",
                     foreignField: "_id",
                     as: "product"
                 }
             },
             {$unwind: {path: "$product", preserveNullAndEmptyArrays: true}},
+
             {
                 $lookup: {
                     from: "users",
@@ -31,6 +32,10 @@ router.get("/", async function (req, res, next) {
                     as: "seller"
                 }
             },
+
+            // only show that product has been exists on product collections
+            // { $match: { productId: "$product._id" } },
+
             {$unwind: {path: "$seller", preserveNullAndEmptyArrays: true}},
             {
                 $project: {
