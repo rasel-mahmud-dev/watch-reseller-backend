@@ -8,10 +8,11 @@ import {ObjectId} from "mongodb";
 
 const router = express.Router()
 
-// [GET]  api/v1/watch find all watches
-router.get("/", async function (req, res, next) {
+
+// [GET]  api/v1/watch find all watches for specific seller
+router.get("/",  auth, role(["SELLER"]),  async function (req, res, next) {
     try {
-        let watches = await (await Watch.collection).find({}).toArray()
+        let watches = await (await Watch.collection).find({sellerId: new ObjectId(req.user.userId)}).toArray()
         response(res, watches, 200)
     } catch (ex) {
         next(ex)
@@ -20,33 +21,41 @@ router.get("/", async function (req, res, next) {
 
 
 // [POST] api/v1/watch create new watch
-router.post("/", auth, role(["SELLER"]), async function (req, res, next) {
+router.post("/", auth, role(["SELLER"]),  async function (req, res, next) {
     const {
         title,
-        location,
-        isAvailable,
         resalePrice,
         originalPrice,
         picture,
+        categoryId,
         conditionType,
-        mobileNumber,
-        description,
+        phone,
         purchaseDate,
+        location,
+        description,
     } = req.body
 
     try {
         let newWatch = new Watch({
             title,
             location,
-            isAvailable,
             resalePrice,
             originalPrice,
             picture,
+            sellerId: new ObjectId(req.user.userId),
+            categoryId: new ObjectId(categoryId),
             conditionType,
-            mobileNumber,
+            phone,
             description,
-            purchaseDate,
+            purchaseDate: new Date(purchaseDate),
         })
+        newWatch = await newWatch.save()
+        if(!newWatch){
+            return response(res, "product save fail, Please try again", 500)
+        }
+
+        response(res, newWatch, 201)
+
     } catch (ex) {
         next(ex)
     }

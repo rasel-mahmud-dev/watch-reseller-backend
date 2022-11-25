@@ -5,6 +5,7 @@ import Category from "../models/Category";
 
 const router = express.Router()
 
+
 // [GET]  api/v1/category find all categories
 router.get("/", async function (req, res, next) {
     try {

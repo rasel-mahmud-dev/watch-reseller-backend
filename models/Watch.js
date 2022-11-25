@@ -4,14 +4,16 @@ class Watch extends Base{
 
     static collectionName = "watches";
     _id = undefined
+    sellerId = undefined
+    categoryId = undefined
     title = ""
     location = ""
-    isAvailable = true
+    isSold = false
     resalePrice = ""
     originalPrice = ""
     picture = ""
+    phone = ""
     conditionType = ""  // can be enum = {"excellent", "good", "fair"}
-    mobileNumber = ""
     description = ""
     purchaseDate = ""
     createdAt = new Date()
@@ -21,12 +23,14 @@ class Watch extends Base{
         super(Watch.collectionName)
         this.title = data.title
         this.location = data.location
-        this.isAvailable = data.isAvailable
+        this.isSold = false
         this.resalePrice = Number(data.resalePrice)
         this.originalPrice = Number(data.originalPrice)
+        this.sellerId = data.sellerId
+        this.categoryId = data.categoryId
         this.picture = data.picture
+        this.phone = data.phone
         this.conditionType = data.conditionType
-        this.mobileNumber = data.mobileNumber
         this.description = data.description
         this.purchaseDate = data.purchaseDate
     }

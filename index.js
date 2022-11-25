@@ -3,11 +3,13 @@ require("dotenv").config()
 
 import express from "express"
 import cors from 'cors'
+import morgan from "morgan"
 
 import router from "./routes";
 
 const app = express()
 app.use(express.json())
+app.use(morgan("dev"))
 
 const whitelist = [process.env.FRONTEND]
 const corsOptions = {
