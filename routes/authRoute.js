@@ -135,4 +135,14 @@ router.get("/logout",   async function (req, res, next) {
 })
 
 
+router.get("/buyers",   async function (req, res, next) {
+    try {
+        response(res, "You are logout", 200);
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
+
 export default router
