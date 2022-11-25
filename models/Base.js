@@ -41,14 +41,12 @@ class Base {
         })
     }
 
-
     static get collection(){
         return Base.Db(this.collectionName)
     }
 
-    static deleteOne(filter){
-        // Base.Db(this.collectionName).deleteOne(filter)
-        // return
+    static async deleteOne(filter) {
+        return (await Base.Db(this.collectionName)).deleteOne(filter)
     }
 }
 
