@@ -21,6 +21,7 @@ router.post("/generate-token", async function (req, res, next) {
         phone,
         email,
         location,
+        address,
         isEntry = false
     } = req.body
 
@@ -40,6 +41,7 @@ router.post("/generate-token", async function (req, res, next) {
                 avatar,
                 role,
                 phone,
+                address,
                 location,
             })
 
@@ -48,7 +50,7 @@ router.post("/generate-token", async function (req, res, next) {
                 return response(res, "User creation fail, Please try again", 403)
             }
             if(!isEntry) {
-                token = createToken(newUser._id, email)
+                token = createToken(newUser._id, role, email)
             }
         } else {
             // update existing user
@@ -60,12 +62,13 @@ router.post("/generate-token", async function (req, res, next) {
             if(avatar) updateUser.avatar = avatar
             if(phone) updateUser.phone = phone
             if(location) updateUser.location = location
+            if(address) updateUser.address = address
 
             let updatedResult = await userCollection.updateOne(
                 {email: email}, {$set: updateUser}
             )
             if(!isEntry) {
-                token = createToken(user._id, email)
+                token = createToken(user._id, user.role, email)
             }
         }
 

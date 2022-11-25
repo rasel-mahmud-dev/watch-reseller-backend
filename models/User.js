@@ -25,6 +25,9 @@ class User extends Base{
         this.username = data.username
         this.email = data.email
         this.isVerified = false
+        this.address = data.address
+        this.location = data.location
+        this.phone = data.phone
         this.avatar = data.avatar
         this.googleId = data.googleId
         this.role = data.role
