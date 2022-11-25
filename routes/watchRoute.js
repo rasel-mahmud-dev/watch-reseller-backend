@@ -4,7 +4,6 @@ import Watch from "../models/Watch";
 import auth from "../middlewares/auth";
 import role from "../middlewares/role";
 import {ObjectId} from "mongodb";
-import Advertise from "../models/Advertise";
 
 
 const router = express.Router()
@@ -74,30 +73,6 @@ router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
         next(ex)
     }
 })
-
-
-
-
-// [GET]  api/v1/watch/add-advertise add to advertise
-router.get("/add-advertise/:productId", auth, role(["SELLER"]), async function (req, res, next) {
-    try {
-        let productId = new ObjectId(req.params.productId)
-        let updateResult = await (await Advertise).updateOne(
-            {productId: productId},
-            { $set: {
-                productId: productId
-            }},
-            { upsert: true }
-        )
-
-        console.log(updateResult)
-
-        response(res, "deleted", 201)
-    } catch (ex) {
-        next(ex)
-    }
-})
-
 
 
 export default router
