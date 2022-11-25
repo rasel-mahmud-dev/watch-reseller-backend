@@ -4,6 +4,9 @@ import {createToken, parseToken} from "../jwt";
 import response from "../response";
 import getCookie from "../utils/getCookie";
 import auth from "../middlewares/auth";
+import role from "../middlewares/role";
+import Order from "../models/Order";
+import {ObjectId} from "mongodb";
 
 
 const router = express.Router()
@@ -49,30 +52,30 @@ router.post("/generate-token", async function (req, res, next) {
             if (!user) {
                 return response(res, "User creation fail, Please try again", 403)
             }
-            if(!isEntry) {
+            if (!isEntry) {
                 token = createToken(newUser._id, role, email)
             }
         } else {
             // update existing user
             let updateUser = {}
-            if(firstName) updateUser.firstName = firstName
-            if(lastName) updateUser.lastName = lastName
-            if(googleId) updateUser.googleId = googleId
-            if(username) updateUser.username = username
-            if(avatar) updateUser.avatar = avatar
-            if(phone) updateUser.phone = phone
-            if(location) updateUser.location = location
-            if(address) updateUser.address = address
+            if (firstName) updateUser.firstName = firstName
+            if (lastName) updateUser.lastName = lastName
+            if (googleId) updateUser.googleId = googleId
+            if (username) updateUser.username = username
+            if (avatar) updateUser.avatar = avatar
+            if (phone) updateUser.phone = phone
+            if (location) updateUser.location = location
+            if (address) updateUser.address = address
 
             let updatedResult = await userCollection.updateOne(
                 {email: email}, {$set: updateUser}
             )
-            if(!isEntry) {
+            if (!isEntry) {
                 token = createToken(user._id, user.role, email)
             }
         }
 
-        if(!isEntry) {
+        if (!isEntry) {
             // send cookie in header to set client browser
             res.cookie("token", token, {
                 domain: process.env.CLIENT,
@@ -119,7 +122,7 @@ router.get("/validate-token", async function (req, res, next) {
 })
 
 
-router.get("/logout",   async function (req, res, next) {
+router.get("/logout", async function (req, res, next) {
     try {
         res.cookie("token", "", {
             domain: process.env.CLIENT,
@@ -135,14 +138,47 @@ router.get("/logout",   async function (req, res, next) {
 })
 
 
-router.get("/buyers",   async function (req, res, next) {
+// get all buyers for a seller user
+router.get("/buyers", auth, role(["SELLER"]), async function (req, res, next) {
     try {
-        response(res, "You are logout", 200);
+
+        let buyers = await (await Order.collection).aggregate([
+            {
+                $match: {sellerId: new ObjectId(req.user.userId)},
+            },
+
+            // find unique seller
+            {
+                $group: {
+                    _id: "$sellerId",
+                }
+            },
+            // lookup from users collection
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {$unwind: {path: "$user", preserveNullAndEmptyArrays: true}},
+            // only select necessary field
+            {
+                $project: {
+                    username: "$user.username",
+                    avatar: "$user.avatar",
+                    email: "$user.email",
+                    isVerified: "$user.isVerified",
+                    createdAt: "$user.createdAt",
+                }
+            }
+        ]).toArray();
+
     } catch (ex) {
         next(ex);
     }
 })
-
 
 
 export default router
