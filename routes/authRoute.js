@@ -186,6 +186,19 @@ router.get("/buyers", auth, role(["SELLER"]), async function (req, res, next) {
 })
 
 
+// get all buyers for a admin role user
+router.get("/buyers", auth, role(["ADMIN"]), async function (req, res, next) {
+    try {
+
+        let buyers = await (await User.collection).find({role: "BUYER"}).toArray();
+        response(res, buyers, 200)
+
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
 
 // get all seller for a admin
 router.get("/sellers", auth, role(["ADMIN"]), async function (req, res, next) {
