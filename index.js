@@ -16,6 +16,10 @@ const corsOptions = {
     credentials: true,
     origin: function (origin, callback) {
 
+        if(process.env.NODE_ENV === "development"){
+            return callback(null, true)
+        }
+
         if(whitelist.indexOf(origin) !== -1) {
             callback(null, true)
 

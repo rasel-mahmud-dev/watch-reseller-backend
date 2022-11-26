@@ -22,8 +22,8 @@ router.get("/", async function (req, res, next) {
                     as: "product"
                 }
             },
-            {$unwind: {path: "$product", preserveNullAndEmptyArrays: true}},
-
+            // skip these doc that not join with products collections
+            {$unwind: {path: "$product", preserveNullAndEmptyArrays: false}},
             {
                 $lookup: {
                     from: "users",

@@ -52,6 +52,7 @@ router.get("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, r
 
 // [POST]  api/v1/order create order
 router.post("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, res, next) {
+    console.log("ASDDDDDDDDDDDDD")
     try {
         const {
             productId,
@@ -69,6 +70,7 @@ router.post("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, 
         let product = await (await Product.collection).findOne(
             {_id: new ObjectId(productId)}
         )
+        console.log(product)
         if (!product) {
             return response(res, "Product not found", 404)
         }
@@ -94,6 +96,7 @@ router.post("/", auth, role(["BUYER", "SELLER", "ADMIN"]), async function (req, 
         response(res, newOrder, 201)
 
     } catch (ex) {
+        console.log(ex)
         next(ex)
     }
 })

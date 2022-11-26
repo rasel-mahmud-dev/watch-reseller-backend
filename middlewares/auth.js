@@ -8,8 +8,9 @@ function auth(req, res, next) {
 
     if (!token) {
         req.user = null;
-        return response(res, "Please login first", 404);
+        return response(res, "Please login first", 401);
     }
+
     parseToken(token)
         .then((u) => {
             req.user = {
@@ -21,7 +22,7 @@ function auth(req, res, next) {
         })
         .catch((err) => {
             req.user = null;
-            response(res, "Authorization, Please login first", 404);
+            response(res, "Authorization, Please login first", 401);
         });
 }
 

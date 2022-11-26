@@ -75,14 +75,17 @@ router.post("/generate-token", async function (req, res, next) {
             }
         }
 
+
         if (!isEntry) {
+            let isDev = process.env.NODE_ENV === "development"
             // send cookie in header to set client browser
             res.cookie("token", token, {
                 domain: process.env.CLIENT,
+                // domain: "http://192.168.71.224",
                 path: "/",
-                secure: true,
+                secure: !isDev,
                 expires: cookieExpirationDate,
-                httpOnly: true,
+                httpOnly: !isDev,
             });
         }
         return response(res, user, 201)
@@ -174,6 +177,22 @@ router.get("/buyers", auth, role(["SELLER"]), async function (req, res, next) {
                 }
             }
         ]).toArray();
+
+        response(res, buyers, 200)
+
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
+
+// get all seller for a admin
+router.get("/sellers", auth, role(["ADMIN"]), async function (req, res, next) {
+    try {
+
+        let sellers = await (await User.collection).find({role: "SELLER"}).toArray();
+        response(res, sellers, 200)
 
     } catch (ex) {
         next(ex);
