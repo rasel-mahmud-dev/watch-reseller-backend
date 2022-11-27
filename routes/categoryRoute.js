@@ -1,8 +1,6 @@
 import express from "express"
 import response from "../response";
 import Category from "../models/Category";
-import auth from "../middlewares/auth";
-import role from "../middlewares/role";
 import Product from "../models/Product";
 import {ObjectId} from "mongodb";
 
@@ -20,7 +18,7 @@ router.get("/", async function (req, res, next) {
     }
 })
 
-// [GET]  api/v1/category create a new category
+// [POST]  api/v1/category create a new category
 router.post("/", async function (req, res, next) {
     try {
         let newCat = new Category({name: req.body.name, picture: req.body.picture})

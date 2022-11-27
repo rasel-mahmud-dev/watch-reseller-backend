@@ -5,7 +5,7 @@ class Payment extends Base{
     static collectionName = "payments";
     _id = undefined
     productId = undefined
-    transactionId = undefined
+    transactionId = ""
     buyerId = undefined
     orderId = undefined
     buyerEmail = ""

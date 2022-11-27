@@ -22,6 +22,16 @@ router.get("/", auth, async function (req, res, next) {
             },
             // skip if product not found
             {$unwind: {path: "$product", preserveNullAndEmptyArrays: false}},
+            {
+                $project: {
+                    productId: "$productId",
+                    title: "$product.title",
+                    isSold: "$product.isSold",
+                    price: "$product.resalePrice",
+                    picture: "$product.picture",
+                    phone: "$product.phone",
+                }
+            }
         ])
         response(res, wishlistProducts, 200)
     } catch (ex) {
@@ -30,7 +40,7 @@ router.get("/", auth, async function (req, res, next) {
 })
 
 // [GET]  api/v1/wishlist create a new wishlist
-router.post("/", async function (req, res, next) {
+router.post("/", auth, async function (req, res, next) {
     try {
         let newWishlist = new Wishlist({
             productId: new ObjectId(req.body.productId),
@@ -40,7 +50,7 @@ router.post("/", async function (req, res, next) {
         if (newWishlist) {
             response(res, newWishlist, 201)
         } else {
-            response(res, "Category adding fail", 500)
+            response(res, "wishlist adding fail", 500)
         }
     } catch (ex) {
         next(ex)

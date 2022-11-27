@@ -7,6 +7,7 @@ import auth from "../middlewares/auth";
 import role from "../middlewares/role";
 import Order from "../models/Order";
 import {ObjectId} from "mongodb";
+import Product from "../models/Product";
 
 
 const router = express.Router()
@@ -209,6 +210,51 @@ router.get("/sellers", auth, role(["ADMIN"]), async function (req, res, next) {
 
         let sellers = await (await User.collection).find({role: "SELLER"}).toArray();
         response(res, sellers, 200)
+
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
+
+// verify as seller by admin
+router.patch("/seller-verify", auth, role(["ADMIN"]), async function (req, res, next) {
+    try {
+        const {sellerId, verifyStatus} = req.body
+
+        let isUpdate = await User.updateOne(
+            {_id: new ObjectId(sellerId)},
+            {$set: { isVerified: verifyStatus }}
+        )
+
+        response(res, "Update", 201)
+
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
+// verify as seller by admin
+router.delete("/seller-delete/:sellerId", auth, role(["ADMIN"]), async function (req, res, next) {
+    try {
+        const {sellerId} = req.params
+
+        let deleted = await User.deleteOne(
+            {_id: new ObjectId(sellerId)}
+        )
+        if(!deleted) {
+            return response(res, "Seller delete fail", 500)
+        }
+
+        //also delete seller products
+        let deleteProduct  = await (await Product.collection).deleteMany({sellerId: new ObjectId(sellerId)})
+        console.log(deleteProduct)
+
+
+
+        response(res, "Seller deleted", 201)
 
     } catch (ex) {
         next(ex);

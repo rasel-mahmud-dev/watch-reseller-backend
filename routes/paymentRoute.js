@@ -1,5 +1,8 @@
 import express from "express"
-import * as stripe from "stripe";
+
+// This is your test secret API key.
+const stripe = require("stripe")(process.env["STRIPE_SECRET_KEY"]);
+
 import Advertise from "../models/Advertise";
 import Payment from "../models/Payment";
 import {ObjectId} from "mongodb";
@@ -8,35 +11,30 @@ import response from "../response";
 import Product from "../models/Product";
 import Order from "../models/Order";
 
-
 const router = express.Router()
 
-router.post("/create-payment-intent", auth, async (req, res, next)=>{
+router.post("/create-payment-intent", auth, async (req, res, next) => {
     try {
-
-        const { items,  price,  } = req.body;
+        const {price} = req.body;
 
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
             amount: price,
-            items: items,
             currency: "usd",
-            automatic_payment_methods: {
-                enabled: true,
-            },
+            "payment_method_types": [
+                "card"
+            ]
         });
-
         res.send({
             clientSecret: paymentIntent.client_secret,
         });
 
     } catch (error) {
-        return res.status(500).json({ message: error.message });
-    } finally {
+        return next(error)
     }
 })
 
-router.post("/pay", auth, async (req, res, next)=>{
+router.post("/pay", auth, async (req, res, next) => {
     try {
 
         const {
@@ -50,23 +48,24 @@ router.post("/pay", auth, async (req, res, next)=>{
         let newPayment = new Payment({
             productId: new ObjectId(productId),
             orderId: new ObjectId(orderId),
-            transactionId: new ObjectId(transactionId),
+            transactionId: transactionId,
             buyerId: new ObjectId(req.user.userId),
             buyerEmail: req.user.email,
             price
         })
 
         newPayment = await newPayment.save()
-        if(!newPayment){
+        if (!newPayment) {
             // should handle rollback money form stripe
             return response(res, "Payment Entry Fail", 500)
         }
 
         // set change order payment status
-        await Order.updateOne({orderId: new ObjectId(orderId)}, {$set: {isPay: true}})
+        let result = await Order.updateOne({_id: new ObjectId(orderId)}, {$set: {isPaid: true}})
+        console.log(result)
 
         // change product sales status
-        let productUpdated  = await Product.updateOne({_id: new ObjectId(productId)}, {
+        let productUpdated = await Product.updateOne({_id: new ObjectId(productId)}, {
             $set: {
                 isSold: true
             }
@@ -76,7 +75,7 @@ router.post("/pay", auth, async (req, res, next)=>{
         // delete advertise if payment create successfully
         let advertiseDeletedResult = await Advertise.deleteOne({productId: new ObjectId(productId)})
 
-        response(res, {message: "Payment Completed", payment: newPayment})
+        response(res, {message: "Payment Completed", payment: newPayment}, 201)
 
 
     } catch (error) {

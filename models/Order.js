@@ -10,7 +10,7 @@ class Order extends Base{
     price = ""
     phone = ""
     meetingAddress = ""
-    isPay = false
+    isPaid = false
     createdAt = new Date()
     updatedAt = new Date()
     constructor(data) {
@@ -19,7 +19,7 @@ class Order extends Base{
         this.sellerId = data.sellerId
         this.buyerId = data.buyerId
         this.title = data.title
-        this.isPay = data.isPay
+        this.isPaid = data.isPaid
         this.price = data.price
         this.phone = data.phone
         this.meetingAddress = data.meetingAddress

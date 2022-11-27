@@ -9,6 +9,7 @@ import advertiseRoute from "./advertiseRoute";
 import orderRoute from "./orderRoute";
 import paymentRoute from "./paymentRoute";
 import wishlistRoute from "./wishlistRoute";
+import blogRoute from "./blogRoute";
 
 
 
@@ -19,6 +20,8 @@ router.use("/api/v1/advertise", advertiseRoute)
 router.use("/api/v1/order", orderRoute)
 router.use("/api/v1/payment", paymentRoute)
 router.use("/api/v1/wishlist", wishlistRoute)
+router.use("/api/v1/blogs", blogRoute)
+
 
 
 export default router
