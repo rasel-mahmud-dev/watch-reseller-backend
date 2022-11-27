@@ -6,6 +6,7 @@ import {ObjectId} from "mongodb";
 import auth from "../middlewares/auth";
 import response from "../response";
 import Product from "../models/Product";
+import Order from "../models/Order";
 
 
 const router = express.Router()
@@ -60,6 +61,9 @@ router.post("/pay", auth, async (req, res, next)=>{
             // should handle rollback money form stripe
             return response(res, "Payment Entry Fail", 500)
         }
+
+        // set change order payment status
+        await Order.updateOne({orderId: new ObjectId(orderId)}, {$set: {isPay: true}})
 
         // change product sales status
         let productUpdated  = await Product.updateOne({_id: new ObjectId(productId)}, {

@@ -13,8 +13,23 @@ const router = express.Router()
 // [GET]  api/v1/category find all categories
 router.get("/", async function (req, res, next) {
     try {
-        let categories = await (await Category.collection).find({}).toArray()
+        let categories = await Category.find()
         response(res, categories, 200)
+    } catch (ex) {
+        next(ex)
+    }
+})
+
+// [GET]  api/v1/category create a new category
+router.post("/", async function (req, res, next) {
+    try {
+        let newCat = new Category({name: req.body.name, picture: req.body.picture})
+        newCat = await newCat.save()
+        if(newCat) {
+            response(res, newCat, 201)
+        } else{
+            response(res, "Category adding fail", 500)
+        }
     } catch (ex) {
         next(ex)
     }
@@ -24,8 +39,8 @@ router.get("/", async function (req, res, next) {
 // [GET]  api/v1/category/category-product/:categoryId find all products for specific category
 router.get("/category-product/:categoryId", async function (req, res, next) {
     try {
-        console.log(req.params.categoryId)
-        let products = await (await Product.collection).aggregate([
+
+        let products = await Product.aggregate([
             {$match: {categoryId: new ObjectId(req.params.categoryId)}},
             {
                 $lookup: {
@@ -61,7 +76,7 @@ router.get("/category-product/:categoryId", async function (req, res, next) {
                     updatedAt: "$updatedAt",
                 }
             }
-        ]).toArray()
+        ])
         response(res, products, 200)
     } catch (ex) {
         next(ex)

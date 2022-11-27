@@ -7,6 +7,8 @@ import productRoute from "./productRoute";
 import categoryRoute from "./categoryRoute";
 import advertiseRoute from "./advertiseRoute";
 import orderRoute from "./orderRoute";
+import paymentRoute from "./paymentRoute";
+import wishlistRoute from "./wishlistRoute";
 
 
 
@@ -15,6 +17,8 @@ router.use("/api/v1/product", productRoute)
 router.use("/api/v1/category", categoryRoute)
 router.use("/api/v1/advertise", advertiseRoute)
 router.use("/api/v1/order", orderRoute)
+router.use("/api/v1/payment", paymentRoute)
+router.use("/api/v1/wishlist", wishlistRoute)
 
 
 export default router

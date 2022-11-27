@@ -1,7 +1,6 @@
 import Base from "./Base.js";
 
 class Order extends Base{
-
     static collectionName = "orders";
     _id = undefined
     productId = undefined

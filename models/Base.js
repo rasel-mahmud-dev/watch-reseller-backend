@@ -14,6 +14,7 @@ class Base {
     static Db(collection){
         return new Promise(async (resolve, reject) => {
             try {
+                // use caching database client connection
                 if (!Base.databaseConnection) {
                     Base.databaseConnection = await mongoConnect();
                 }
@@ -45,12 +46,23 @@ class Base {
         return Base.Db(this.collectionName)
     }
 
+    static async find(...params) {
+       return (await Base.Db(this.collectionName)).find(...params).toArray();
+    }
+    static async findOne(...params) {
+        return (await Base.Db(this.collectionName)).findOne(...params)
+    }
+
     static async deleteOne(filter) {
         return (await Base.Db(this.collectionName)).deleteOne(filter)
     }
 
-    static async updateOne(filter, updateDate, opt= {}) {
-        return (await Base.Db(this.collectionName)).updateOne(filter, updateDate, opt)
+    static async updateOne(filter, updateData, opt= {}) {
+        return (await Base.Db(this.collectionName)).updateOne(filter, updateData, opt)
+    }
+
+    static async aggregate(pipelines) {
+        return (await Base.Db(this.collectionName)).aggregate(pipelines).toArray();
     }
 }
 

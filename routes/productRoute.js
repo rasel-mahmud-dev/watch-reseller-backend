@@ -12,7 +12,7 @@ const router = express.Router()
 // [GET]  api/v1/product find all products for specific seller
 router.get("/", auth, role(["SELLER"]), async function (req, res, next) {
     try {
-        let watches = await (await Product.collection).aggregate([
+        let watches = await Product.aggregate([
             {$match: {sellerId: new ObjectId(req.user.userId)}},
             {
                 $lookup: {
@@ -44,7 +44,7 @@ router.get("/", auth, role(["SELLER"]), async function (req, res, next) {
                     createdAt: 1,
                 }
             }
-        ]).toArray()
+        ])
         response(res, watches, 200)
     } catch (ex) {
         next(ex)
