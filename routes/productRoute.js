@@ -111,5 +111,16 @@ router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
     }
 })
 
+// [POST]  api/v1/product/search
+router.post("/search", async function (req, res, next) {
+    try {
+        const {title} = req.body
+        let result = await Product.find({title: {$regex: new RegExp(title, "i")} })
+        response(res, result, 200)
+    } catch (ex) {
+        next(ex)
+    }
+})
+
 
 export default router
