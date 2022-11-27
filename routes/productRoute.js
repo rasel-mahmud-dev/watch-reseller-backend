@@ -99,9 +99,13 @@ router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
     try {
         let deleteResult = await Product.deleteOne({
             _id: new ObjectId(req.params.id),
-            sellerId: new ObjectId(req.user.userId)
+            buyerId: new ObjectId(req.user.userId)
         })
-        response(res, "deleted", 201)
+        if (deleteResult.deletedCount) {
+            response(res, "deleted", 201)
+        } else {
+            response(res, "Order deleted fail", 404)
+        }
     } catch (ex) {
         next(ex)
     }

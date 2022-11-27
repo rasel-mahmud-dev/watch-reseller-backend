@@ -1,3 +1,4 @@
+import * as path from "path";
 
 require("dotenv").config()
 
@@ -10,6 +11,7 @@ import router from "./routes";
 const app = express()
 app.use(express.json())
 app.use(morgan("dev"))
+
 
 const whitelist = [process.env.FRONTEND]
 const corsOptions = {
@@ -32,8 +34,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+
 app.get("/", (req, res)=>{
-    res.send("hello world")
+    res.sendFile(path.resolve("./views/index.html"))
 })
 
 

@@ -81,9 +81,13 @@ router.post("/generate-token", async function (req, res, next) {
             // send cookie in header to set client browser
             res.cookie("token", token, {
                 domain: process.env.CLIENT,
+                // domain: "watch-reseller-r-4000.web.app",
+                // domain: ".watch-reseller-r-4000.web.app",
                 // domain: "http://192.168.71.224",
-                path: "/",
+                // signed: true,
+                // secret: process.env.JWT_SECRET,
                 secure: !isDev,
+                sameSite: "strict",
                 expires: cookieExpirationDate,
                 httpOnly: !isDev,
             });
@@ -142,7 +146,7 @@ router.get("/logout", async function (req, res, next) {
 
 
 // get all buyers for a seller user
-router.get("/buyers", auth, role(["SELLER"]), async function (req, res, next) {
+router.get("/seller-buyers", auth, role(["SELLER"]), async function (req, res, next) {
     try {
 
         let buyers = await (await Order.collection).aggregate([
@@ -189,7 +193,6 @@ router.get("/buyers", auth, role(["SELLER"]), async function (req, res, next) {
 // get all buyers for a admin role user
 router.get("/buyers", auth, role(["ADMIN"]), async function (req, res, next) {
     try {
-
         let buyers = await (await User.collection).find({role: "BUYER"}).toArray();
         response(res, buyers, 200)
 

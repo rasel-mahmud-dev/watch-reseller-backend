@@ -48,6 +48,10 @@ class Base {
     static async deleteOne(filter) {
         return (await Base.Db(this.collectionName)).deleteOne(filter)
     }
+
+    static async updateOne(filter, updateDate, opt= {}) {
+        return (await Base.Db(this.collectionName)).updateOne(filter, updateDate, opt)
+    }
 }
 
 export default Base;
