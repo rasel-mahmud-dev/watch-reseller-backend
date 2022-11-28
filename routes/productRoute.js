@@ -51,6 +51,16 @@ router.get("/", auth, role(["SELLER"]), async function (req, res, next) {
     }
 })
 
+// [GET]  api/v1/product/:id get single  product for update
+router.get("/:productId", auth, role(["SELLER"]), async function (req, res, next) {
+    try {
+        let product = await Product.findOne({_id: new ObjectId(req.params.productId)})
+        response(res, product, 200)
+    } catch (ex) {
+        next(ex)
+    }
+})
+
 
 // [POST] api/v1/product create new watch
 router.post("/", auth, role(["SELLER"]), async function (req, res, next) {
@@ -123,16 +133,20 @@ router.patch("/", auth, role(["SELLER"]), async function (req, res, next) {
         if (description) updateProduct.description = description
         if (purchaseDate) updateProduct.purchaseDate = new Date(purchaseDate)
 
-        let updatedResult = await Product.updateOne(
-            {_id: new ObjectId(productId)},
+        let docs = await Product.updateOne(
+            {_id: new ObjectId(productId),
+                sellerId: new ObjectId(req.user.userId)
+            },
             {$set: updateProduct}
         )
 
-        if (updatedResult) {
-            return response(res, "product update fail, Please try again", 500)
+        if(!docs.matchedCount){
+            return response(res, "You can not update other seller product", 500)
         }
-
-        response(res, updatedResult, 201)
+        if(docs.modifiedCount === 0){
+            return response(res, "product update fail", 500)
+        }
+        response(res, updateProduct, 201)
 
     } catch (ex) {
         next(ex)

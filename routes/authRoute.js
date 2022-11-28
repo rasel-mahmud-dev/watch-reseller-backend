@@ -13,7 +13,6 @@ import Product from "../models/Product";
 const router = express.Router()
 
 
-
 router.post("/generate-token", async function (req, res, next) {
     const {
         googleId,
@@ -86,7 +85,6 @@ router.post("/generate-token", async function (req, res, next) {
     }
 })
 
-
 router.get("/get-current-user", auth, async function (req, res, next) {
     try {
         let user = await User.findOne({email: req.user.email})
@@ -99,7 +97,6 @@ router.get("/get-current-user", auth, async function (req, res, next) {
         next(ex)
     }
 })
-
 
 router.get("/validate-token", async function (req, res, next) {
     try {
@@ -115,7 +112,6 @@ router.get("/validate-token", async function (req, res, next) {
     }
 })
 
-
 router.get("/logout", async function (req, res, next) {
     try {
         res.cookie("token", "", {
@@ -130,7 +126,6 @@ router.get("/logout", async function (req, res, next) {
         next(ex);
     }
 })
-
 
 // get all buyers for a seller user
 router.get("/seller-buyers", auth, role(["SELLER"]), async function (req, res, next) {
@@ -176,7 +171,6 @@ router.get("/seller-buyers", auth, role(["SELLER"]), async function (req, res, n
     }
 })
 
-
 // get all buyers for a admin role user
 router.get("/buyers", auth, role(["ADMIN"]), async function (req, res, next) {
     try {
@@ -187,8 +181,6 @@ router.get("/buyers", auth, role(["ADMIN"]), async function (req, res, next) {
         next(ex);
     }
 })
-
-
 
 // get all seller for a admin
 router.get("/sellers", auth, role(["ADMIN"]), async function (req, res, next) {
@@ -201,8 +193,6 @@ router.get("/sellers", auth, role(["ADMIN"]), async function (req, res, next) {
         next(ex);
     }
 })
-
-
 
 // verify as seller by admin
 router.patch("/seller-verify", auth, role(["ADMIN"]), async function (req, res, next) {
@@ -220,7 +210,6 @@ router.patch("/seller-verify", auth, role(["ADMIN"]), async function (req, res, 
         next(ex);
     }
 })
-
 
 // verify as seller by admin
 router.delete("/seller-delete/:sellerId", auth, role(["ADMIN"]), async function (req, res, next) {
@@ -246,7 +235,6 @@ router.delete("/seller-delete/:sellerId", auth, role(["ADMIN"]), async function 
         next(ex);
     }
 })
-
 
 // delete buyer
 router.delete("/buyer-delete/:buyerId", auth, role(["ADMIN"]), async function (req, res, next) {
