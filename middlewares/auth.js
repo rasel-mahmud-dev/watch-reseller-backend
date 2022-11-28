@@ -1,10 +1,10 @@
 import response from "../response";
 import { parseToken } from "../jwt";
-import getCookie from "../utils/getCookie";
+import getToken from "../utils/getToken";
 
 
 function auth(req, res, next) {
-    let token = getCookie("token", req);
+    let token = getToken(req);
 
     if (!token) {
         req.user = null;

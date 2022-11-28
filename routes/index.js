@@ -13,7 +13,6 @@ import blogRoute from "./blogRoute";
 import testimonialRoute from "./testimonialRoute";
 
 
-
 router.use("/api/v1/auth", authRoute)
 router.use("/api/v1/product", productRoute)
 router.use("/api/v1/category", categoryRoute)

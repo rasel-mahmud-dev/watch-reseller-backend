@@ -5,13 +5,32 @@ const stripe = require("stripe")(process.env["STRIPE_SECRET_KEY"]);
 
 import Advertise from "../models/Advertise";
 import Payment from "../models/Payment";
-import {ObjectId} from "mongodb";
+import {ObjectId, Transaction} from "mongodb";
 import auth from "../middlewares/auth";
 import response from "../response";
 import Product from "../models/Product";
 import Order from "../models/Order";
+import role from "../middlewares/role";
 
 const router = express.Router()
+
+router.get("/transactions", auth, async (req, res, next) => {
+    try {
+        let payments = await Payment.find({})
+        response(res, payments, 200)
+    } catch (ex) {
+        next(ex)
+    }
+})
+
+router.get("/transactions/:buyerId", auth, role(["BUYER"]), async (req, res, next) => {
+    try {
+        let payments = await Payment.find({buyerId: new ObjectId(req.params.buyerId)})
+        response(res, payments, 200)
+    } catch (ex) {
+        next(ex)
+    }
+})
 
 router.post("/create-payment-intent", auth, async (req, res, next) => {
     try {
@@ -19,11 +38,7 @@ router.post("/create-payment-intent", auth, async (req, res, next) => {
 
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: price,
-            currency: "usd",
-            "payment_method_types": [
-                "card"
-            ]
+            amount: price, currency: "usd", "payment_method_types": ["card"]
         });
         res.send({
             clientSecret: paymentIntent.client_secret,
@@ -38,10 +53,7 @@ router.post("/pay", auth, async (req, res, next) => {
     try {
 
         const {
-            productId,
-            transactionId,
-            orderId,
-            price,
+            productId, transactionId, orderId, price,
         } = req.body;
 
         // create a payment record in database

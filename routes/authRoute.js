@@ -2,7 +2,7 @@ import express from "express"
 import User from "../models/User";
 import {createToken, parseToken} from "../jwt";
 import response from "../response";
-import getCookie from "../utils/getCookie";
+import getToken from "../utils/getToken";
 import auth from "../middlewares/auth";
 import role from "../middlewares/role";
 import Order from "../models/Order";
@@ -12,7 +12,7 @@ import Product from "../models/Product";
 
 const router = express.Router()
 
-let cookieExpirationDate = new Date(Date.now() + 1000 * 3600 * 24 * 7); // 7 days
+
 
 router.post("/generate-token", async function (req, res, next) {
     const {
@@ -53,9 +53,9 @@ router.post("/generate-token", async function (req, res, next) {
             if (!user) {
                 return response(res, "User creation fail, Please try again", 403)
             }
-            if (!isEntry) {
-                token = createToken(newUser._id, role, email)
-            }
+            // if (!isEntry) {
+            //     token = createToken(newUser._id, role, email)
+            // }
         } else {
             // update existing user
             let updateUser = {}
@@ -71,29 +71,15 @@ router.post("/generate-token", async function (req, res, next) {
             let updatedResult = await userCollection.updateOne(
                 {email: email}, {$set: updateUser}
             )
-            if (!isEntry) {
-                token = createToken(user._id, user.role, email)
-            }
+
+            // if (!isEntry) {
+            //     token = createToken(user._id, user.role, email)
+            // }
         }
 
+        token = createToken(user._id, user.role, email)
 
-        if (!isEntry) {
-            let isDev = process.env.NODE_ENV === "development"
-            // send cookie in header to set client browser
-            res.cookie("token", token, {
-                domain: process.env.CLIENT,
-                // domain: "watch-reseller-r-4000.web.app",
-                // domain: ".watch-reseller-r-4000.web.app",
-                // domain: "http://192.168.71.224",
-                // signed: true,
-                // secret: process.env.JWT_SECRET,
-                secure: !isDev,
-                sameSite: "strict",
-                expires: cookieExpirationDate,
-                httpOnly: !isDev,
-            });
-        }
-        return response(res, user, 201)
+        return response(res, {user, token}, 201)
 
     } catch (ex) {
         next(ex)
@@ -103,7 +89,7 @@ router.post("/generate-token", async function (req, res, next) {
 
 router.get("/get-current-user", auth, async function (req, res, next) {
     try {
-        let user = await (await User.collection).findOne({email: req.user.email})
+        let user = await User.findOne({email: req.user.email})
         if (user) {
             return response(res, user, 200)
         } else {
@@ -117,7 +103,7 @@ router.get("/get-current-user", auth, async function (req, res, next) {
 
 router.get("/validate-token", async function (req, res, next) {
     try {
-        let token = getCookie("token", req)
+        let token = getToken( req)
         if (!token) {
             return response(res, "token not found", 401)
         }
@@ -255,6 +241,29 @@ router.delete("/seller-delete/:sellerId", auth, role(["ADMIN"]), async function 
 
 
         response(res, "Seller deleted", 201)
+
+    } catch (ex) {
+        next(ex);
+    }
+})
+
+
+// delete buyer
+router.delete("/buyer-delete/:buyerId", auth, role(["ADMIN"]), async function (req, res, next) {
+    try {
+        const {buyerId} = req.params
+
+        let deleted = await User.deleteOne(
+            {_id: new ObjectId(buyerId)}
+        )
+        if(!deleted) {
+            return response(res, "Buyer delete fail", 500)
+        }
+
+        //also delete buyer all orders
+        await (await Order.collection).deleteMany({buyerId: new ObjectId(buyerId)})
+
+        response(res, "Buyer deleted", 201)
 
     } catch (ex) {
         next(ex);
