@@ -1,6 +1,6 @@
 import Base from "./Base.js";
 
-class Payment extends Base{
+class Payment extends Base {
 
     static collectionName = "payments";
     _id = undefined
@@ -10,8 +10,11 @@ class Payment extends Base{
     orderId = undefined
     buyerEmail = ""
     price = ""
+    title = ""
+    picture = ""
     createdAt = new Date()
     updatedAt = new Date()
+
     constructor(data) {
         super(Payment.collectionName)
         this.productId = data.productId
@@ -20,6 +23,8 @@ class Payment extends Base{
         this.orderId = data.orderId
         this.buyerEmail = data.buyerEmail
         this.price = data.price
+        this.title = data.title
+        this.picture = data.picture
     }
 }
 
