@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env["STRIPE_SECRET_KEY"]);
 
 import Advertise from "../models/Advertise";
 import Payment from "../models/Payment";
-import {ObjectId, Transaction} from "mongodb";
+import {ObjectId} from "mongodb";
 import auth from "../middlewares/auth";
 import response from "../response";
 import Product from "../models/Product";
@@ -53,7 +53,12 @@ router.post("/pay", auth, async (req, res, next) => {
     try {
 
         const {
-            productId, transactionId, orderId, price,
+            productId,
+            transactionId,
+            orderId,
+            price,
+            title,
+            picture
         } = req.body;
 
         // create a payment record in database
@@ -63,7 +68,9 @@ router.post("/pay", auth, async (req, res, next) => {
             transactionId: transactionId,
             buyerId: new ObjectId(req.user.userId),
             buyerEmail: req.user.email,
-            price
+            price,
+            title,
+            picture
         })
 
         newPayment = await newPayment.save()
@@ -74,7 +81,6 @@ router.post("/pay", auth, async (req, res, next) => {
 
         // set change order payment status
         let result = await Order.updateOne({_id: new ObjectId(orderId)}, {$set: {isPaid: true}})
-        console.log(result)
 
         // change product sales status
         let productUpdated = await Product.updateOne({_id: new ObjectId(productId)}, {

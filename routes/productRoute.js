@@ -94,12 +94,59 @@ router.post("/", auth, role(["SELLER"]), async function (req, res, next) {
 })
 
 
+// [POST] api/v1/product update new watch
+router.patch("/", auth, role(["SELLER"]), async function (req, res, next) {
+    const {
+        title,
+        resalePrice,
+        originalPrice,
+        picture,
+        categoryId,
+        productId,
+        conditionType,
+        phone,
+        purchaseDate,
+        location,
+        description,
+    } = req.body
+
+    try {
+        let updateProduct = {}
+        if (title) updateProduct.title = title
+        if (location) updateProduct.location = location
+        if (resalePrice) updateProduct.resalePrice = resalePrice
+        if (originalPrice) updateProduct.originalPrice = originalPrice
+        if (picture) updateProduct.picture = picture
+        if (categoryId) updateProduct.categoryId = new ObjectId(categoryId)
+        if (conditionType) updateProduct.conditionType = conditionType
+        if (phone) updateProduct.phone = phone
+        if (description) updateProduct.description = description
+        if (purchaseDate) updateProduct.purchaseDate = new Date(purchaseDate)
+
+        let updatedResult = await Product.updateOne(
+            {_id: new ObjectId(productId)},
+            {$set: updateProduct}
+        )
+
+        if (updatedResult) {
+            return response(res, "product update fail, Please try again", 500)
+        }
+
+        response(res, updatedResult, 201)
+
+    } catch (ex) {
+        next(ex)
+    }
+})
+
+
 // [DELETE]  api/v1/product/:id delete seller product
 router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
+
     try {
         let deleteResult = await Product.deleteOne({
             _id: new ObjectId(req.params.id),
-            buyerId: new ObjectId(req.user.userId)
+            sellerId: new ObjectId(req.user.userId)
         })
         if (deleteResult.deletedCount) {
             response(res, "deleted", 201)
@@ -115,7 +162,7 @@ router.delete("/:id", auth, role(["SELLER"]), async function (req, res, next) {
 router.post("/search", async function (req, res, next) {
     try {
         const {title} = req.body
-        let result = await Product.find({title: {$regex: new RegExp(title, "i")} })
+        let result = await Product.find({title: {$regex: new RegExp(title, "i")}})
         response(res, result, 200)
     } catch (ex) {
         next(ex)
