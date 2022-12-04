@@ -1,7 +1,12 @@
 # Watch.Reseller (Backend)
 
-## Repo: https://github.com/programming-hero-web-course-4/b612-used-products-resale-server-side-rasel-mahmud-dev
-## Live: https://watch-reseller-rosy.vercel.app
+
+### Repo Server : https://github.com/rasel-mahmud-dev/watch-reseller-backend
+### Repo client : https://github.com/rasel-mahmud-dev/watch-reseller-frontend
+<br />
+
+### Server Live: https://watch-reseller-rosy.vercel.app
+### Client Live: https://watch-reseller.web.app
 
 
 
@@ -11,7 +16,7 @@
 - dotenv
 - jwt(jsonwebtoken)
 - mongodb
-- stripe
+- stripe (credit card payment)
 
 
 ## Functional requirement.
@@ -54,3 +59,13 @@
 - GET /api/v1/wishlist [wishlist wishlist end point]
 
 
+
+
+## Preview of HomePage
+![](static/home-page-copy.webp)
+
+## Preview of Add Product
+![](static/add-product-copy.webp)
+
+## Preview of Admin dashboard all buyers
+![](static/all-buyers-copy.webp)
